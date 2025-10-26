@@ -1,0 +1,81 @@
+:root {
+    --color-primario: #0780df;
+    --color-secundario: #f5f5f5;
+    --color-negro: black;
+}
+
+.login-title {
+    font-size: 2rem;
+    color: var(--color-primario);
+    text-align: center;
+    margin-top: 100px;
+    font-family: Arial, sans-serif;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    height: 600px;
+    margin: 0 auto;
+    padding: 50px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+#username-label, #password-label {
+    color: var(--color-negro);
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+#username, #password {
+    background-color: #fff;
+    color: var(--color-negro);
+    width: auto;
+    height: 60px;
+    padding-left: 40px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 20px;
+}
+
+#continua {
+    opacity: 0.6;
+    color: var(--color-negro);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#continua::after {
+  opacity: 0.5;
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: black;
+}
+
+#google-logo, #un-js {
+  width: 28px; /* tamaño ideal */
+  height: auto;
+}
+
+.logos {
+  display: flex;
+  justify-content: center;  /* centra horizontalmente */
+  align-items: center;      /* centra verticalmente */
+  width: 80px;
+  height: 50px;
+  margin: 20px auto;        /* centra el bloque dentro del form */
+  background-color: #f1f0f0ee;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.logos:hover {
+    background-color: #ccc;
+}
