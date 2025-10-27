@@ -24,8 +24,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -33,6 +31,11 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+#title {
+  font-family: montserrat;
+  font-weight: 300;
 }
 
 button {
@@ -65,4 +68,21 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  margin-bottom: 100px;
+  text-align: center;
+  border-bottom: 1px solid #dfdfdf;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px;
+  color: black;
+  box-sizing: border-box;
+}
+
+#logo-clinica {
+  width: 5%;
+  height: auto;
+  color: #0780df;
 }

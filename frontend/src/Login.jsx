@@ -15,7 +15,7 @@ export function Login() {
                 <p id='continua'>O continua con</p>
                     <a className='logos' target='blank' href='https://www.google.com/?hl=es&safe=active&ssui=on'><img src="/google.svg" id='google-logo' alt="google logo" /></a>
                 <button type="submit">Iniciar sesión</button>
-                <p style={{color: 'black'}}>No tienes una cuenta? Crea una <a href="">Registrase</a></p>
+                <p style={{color: 'black'}}>No tienes una cuenta? <a href="">Registrarse</a></p>
             </form>
         </div>
     )
