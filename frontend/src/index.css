@@ -86,3 +86,10 @@ button:focus-visible {
   height: auto;
   color: #0780df;
 }
+
+ /* Versión más compacta del header (para el dashboard) */
+.header-compact {
+  margin-bottom: 15px !important;
+  box-shadow: rgba(50, 50, 93, 0.1) 0px 2px 4px -1px; /* sombra más sutil */
+  padding: 0.8rem 0;
+  }
