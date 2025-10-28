@@ -1,0 +1,137 @@
+.dashboard-container {
+  padding: 20px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.nav-tabs .nav-link {
+  color: #6c757d;
+  border: none;
+  padding: 1rem 1.5rem;
+}
+
+.nav-tabs .nav-link.active {
+  color: #0780df;
+  border-bottom: 3px solid #0780df;
+  background: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #0780df;
+  border: none;
+}
+
+/* Calendario simple */
+.calendar-simple {
+  margin-top: 20px;
+}
+
+.calendar-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border: 1px solid #e0e0e0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+}
+
+.calendar-day:hover {
+  background-color: #f0f0f0;
+  border-color: #0780df;
+}
+
+.calendar-day.active {
+  background-color: #0780df;
+  color: white;
+  border-color: #0780df;
+}
+
+/* Tarjetas */
+.card {
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.card-title {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Tabla */
+.table thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  color: #495057;
+  font-weight: 600;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Badges personalizados */
+.badge {
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  border-radius: 20px;
+}
+
+/* Estilos para react-calendar */
+.react-calendar {
+  width: 100% !important;
+  border: none !important;
+  font-family: inherit;
+}
+
+.react-calendar__tile--active {
+  background: #0780df !important;
+  color: white !important;
+}
+
+.react-calendar__tile--now {
+  background: #e3f2fd !important;
+}
+
+.react-calendar__tile:hover {
+  background: #f0f0f0 !important;
+}
+
+.react-calendar__navigation button {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calendar-days {
+    gap: 3px;
+  }
+  
+  .calendar-day {
+    font-size: 0.75rem;
+  }
+  
+  .nav-tabs .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
