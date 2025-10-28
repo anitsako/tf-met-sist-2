@@ -95,6 +95,11 @@
   border-radius: 20px;
 }
 
+#person-logo {
+  width: 28px; /* tamaño ideal */
+  height: auto;
+}
+
 /* Estilos para react-calendar */
 .react-calendar {
   width: 100% !important;

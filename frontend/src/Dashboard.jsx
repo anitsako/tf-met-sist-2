@@ -48,7 +48,7 @@ export function Dashboard() {
             </li>
           </ul>
           <div className="ms-auto d-flex align-items-center">
-            <span className="me-3">👤 Dr. García</span>
+            <span className="me-3"><img src="/person-circle.svg" id='person-logo' alt="person logo" /> Dr. García</span>
           </div>
         </div>
       </nav>
@@ -89,7 +89,7 @@ export function Dashboard() {
 
           {/* Columna derecha - Gestión de Citas */}
           <div className="col-md-8">
-            <div className="card">
+            <div className="card h-50">
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <h5 className="card-title mb-0">Gestión de Citas</h5>

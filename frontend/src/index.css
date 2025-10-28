@@ -75,6 +75,7 @@ button:focus-visible {
   display: flex;
   margin-bottom: 100px;
   text-align: center;
+  align-items: center;
   border-bottom: 1px solid #dfdfdf;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px;
   color: black;
