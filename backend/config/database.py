@@ -1,5 +1,9 @@
 from databases import Database
+from dotenv import load_dotenv
+import os
 
-DATABASE_URL = "URL"
+load_dotenv()
 
-db = Database(DATABASE_URL)
+uri_database = os.getenv("DATABASE_URL")
+
+db = Database(uri_database)

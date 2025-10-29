@@ -16,6 +16,11 @@ build/
 .env.test.local
 .env.production.local
 
+**/__pycache__/
+*.pyc
+*.pyo
+
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
