@@ -21,3 +21,19 @@ async def crear_clientes(cliente: ClienteIn):
     """
     last_record_id = await db.execute(query=query, values=cliente.dict())
     return {**cliente.dict(), "id": last_record_id}
+
+
+@router.put('/{id}', response_model=List[Cliente])
+async def modificar_clientes(cliente_id: int, cliente: ClienteIn):
+    query = """
+            UPDATE clientes SET 
+            dni = :dni
+            nombre = :nombre
+            apellido = :apellido
+            direccion = :direccion
+            telefono = :telefono
+            WHERE id = :id
+    """
+    values = {**cliente.dict(), "id": cliente_id}
+    await db.execute(query=query, values=values)
+    return {**cliente.dict(), "id" :cliente_id}
