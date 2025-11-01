@@ -1,13 +1,28 @@
 from typing import List
 from fastapi import APIRouter, HTTPException, status
 from config.database import db
-from schemas.turno import Turno, TurnoIn, TurnoEstadoUpdate
+from schemas.turno import Turno, TurnoIn, TurnoEstadoUpdate, TurnoOut
 
 router = APIRouter()
 
-@router.get("/", response_model=List[Turno])
-async def listar_turnos():
-    return await db.fetch_all("SELECT * FROM turnos ORDER BY fecha, hora")
+# @router.get("/", response_model=List[Turno])
+# async def listar_turnos():
+#     return await db.fetch_all("SELECT * FROM turnos ORDER BY fecha, hora")
+
+@router.get("/", response_model=List[TurnoOut])
+async def listar_turnos_completo():
+    query = """
+                SELECT t.id, t.fecha, TIME_FORMAT(t.hora, '%H:%i') AS hora, t.estado,
+                       CONCAT(p.nombre, ' ', p.apellido) AS paciente,
+                       CONCAT(c.nombre, ' ', c.apellido) AS profesional,
+                       e.nombre AS especialidad
+                FROM turnos t
+                JOIN pacientes p ON t.paciente_id = p.id
+                JOIN profesionales c ON t.profesional_id = c.id
+                JOIN especialidades e ON e.id = c.especialidad_id
+                ORDER BY t.fecha, t.hora
+            """
+    return await db.fetch_all(query)
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def crear_turno(body: TurnoIn):

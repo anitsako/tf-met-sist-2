@@ -24,5 +24,14 @@ class Turno(BaseModel):
     hora: time
     estado: str
 
+class TurnoOut(BaseModel):
+    id: int
+    fecha: date
+    hora: time
+    estado: str
+    paciente: str
+    profesional: str
+    especialidad: str
+
 class TurnoEstadoUpdate(BaseModel):
     estado: str  # pendiente | confirmado | cancelado | reprogramado | atendido

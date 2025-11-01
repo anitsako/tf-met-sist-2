@@ -6,6 +6,7 @@ import { Header } from "./Header";
 import { Pacientes } from "./Pacientes";
 import { Especialidades } from "./Especialidades";
 import { Profesionales } from "./Profesionales";  // ✅ componente real
+import { TurnoForm } from "./TurnoForm"
 
 function Calendario() { return <div className="container py-4"><h3>Calendario</h3></div>; }
 function Reportes() { return <div className="container py-4"><h3>Reportes</h3></div>; }
@@ -16,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<><Header /><Login /></>} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/nueva-cita" element={<TurnoForm />} />
         <Route path="/pacientes" element={<><Header compact /><Pacientes /></>} />
         <Route path="/especialidades" element={<><Header compact /><Especialidades /></>} />
         <Route path="/profesionales" element={<><Header compact /><Profesionales /></>} />

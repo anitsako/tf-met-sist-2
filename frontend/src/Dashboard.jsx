@@ -1,17 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./Dashboard.css";
 import { Header } from "./Header";
+import { api } from "./api";
 
 export function Dashboard() {
   const [fecha, setFecha] = useState(new Date());
+  const [lista, setLista] = useState([])
+
+  useEffect(() => {
+      const cargar = async () => {
+      try {
+        const response = await api.get("/turnos")
+        setLista(response.data)
+        console.log(response.data)
+      } catch(e) {
+        console.error("error al cargar los turnos", e)
+      }
+  }
+    cargar()
+  }, [])
+
 
   const citasPendientes = [
     { paciente: "Juan Perez", hora: "10:00 AM - 11:30" },
     { paciente: "Ana Rodriguez", doctor: "Dra. Lopez" },
   ];
+
+  
 
   const citas = []; 
 
@@ -112,7 +130,9 @@ export function Dashboard() {
                 <div className="card-body">
                   <div className="d-flex justify-content-between align-items-center mb-3">
                     <h5 className="card-title mb-0">Gestión de Citas</h5>
-                    <button className="btn btn-primary">+ Nueva Cita</button>
+                    <NavLink to={'/nueva-cita'} className="btn btn-primary">
+                      + Nueva Cita
+                    </NavLink>
                   </div>
 
                   <div className="table-responsive">
@@ -128,14 +148,14 @@ export function Dashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {citas.length === 0 ? (
+                        {lista.length === 0 ? (
                           <tr>
                             <td colSpan="6" className="text-center text-muted">
                               Sin datos
                             </td>
                           </tr>
                         ) : (
-                          citas.map((cita, idx) => (
+                          lista.map((cita, idx) => (
                             <tr key={idx}>
                               <td>{cita.fecha}</td>
                               <td>{cita.hora}</td>
