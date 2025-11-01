@@ -1,27 +1,29 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import './App.css'
-import { Login } from './Login'
-import { Dashboard } from './Dashboard'
-import { Header } from './Header'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./App.css";
+import { Login } from "./Login";
+import { Dashboard } from "./Dashboard";
+import { Header } from "./Header";
+import { Pacientes } from "./Pacientes";
+import { Especialidades } from "./Especialidades";
+import { Profesionales } from "./Profesionales";  // ✅ componente real
+
+function Calendario() { return <div className="container py-4"><h3>Calendario</h3></div>; }
+function Reportes() { return <div className="container py-4"><h3>Reportes</h3></div>; }
 
 function App() {
   return (
     <BrowserRouter>
-    <Routes>
-      {/*Ruta del Login (Pagina inicial) */}
-      <Route path="/" element={
-      <>
-        <Header />
-        <Login />
-      </>
-     } />
-
-     {/*Ruta del Dashboard */}
-     <Route path="/dashboard" element={<Dashboard />} />
-    </Routes>
+      <Routes>
+        <Route path="/" element={<><Header /><Login /></>} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/pacientes" element={<><Header compact /><Pacientes /></>} />
+        <Route path="/especialidades" element={<><Header compact /><Especialidades /></>} />
+        <Route path="/profesionales" element={<><Header compact /><Profesionales /></>} />
+        <Route path="/calendario" element={<><Header compact /><Calendario /></>} />
+        <Route path="/reportes" element={<><Header compact /><Reportes /></>} />
+      </Routes>
     </BrowserRouter>
-    
-  )
+  );
 }
 
-export default App
+export default App;
