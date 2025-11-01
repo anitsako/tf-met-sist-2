@@ -66,7 +66,6 @@ export function Profesionales() {
 
   return (
     <>
-
       {/* NAV con NavLink */}
       <nav className="navbar navbar-expand-lg navbar-light bg-light mb-4">
         <div className="container-fluid">
