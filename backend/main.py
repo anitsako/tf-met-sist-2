@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from config.database import db
 from routers import clientes, pacientes, especialidad, turnos, profesionales
 
-app = FastAPI(title="Sistema de Turnos")
+app = FastAPI()
 
 # CORS: permite al front (Vite) llamar al backend
 app.add_middleware(

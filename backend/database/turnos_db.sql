@@ -4,15 +4,6 @@ USE railway;
 --  TABLAS
 -- ============================================
 
-CREATE TABLE IF NOT EXISTS clientes (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  dni BIGINT NOT NULL UNIQUE,
-  nombre VARCHAR(100) NOT NULL,
-  apellido VARCHAR(100) NOT NULL,
-  direccion VARCHAR(255),
-  telefono VARCHAR(50)
-);
-
 CREATE TABLE IF NOT EXISTS pacientes (
   id INT AUTO_INCREMENT PRIMARY KEY,
   dni BIGINT NOT NULL UNIQUE,
@@ -24,7 +15,7 @@ CREATE TABLE IF NOT EXISTS pacientes (
 
 CREATE TABLE IF NOT EXISTS especialidades (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(120) NOT NULL UNIQUE,
+  nombre VARCHAR(100) NOT NULL UNIQUE,
   descripcion VARCHAR(255)
 );
 
@@ -33,7 +24,7 @@ CREATE TABLE IF NOT EXISTS profesionales (
   nombre VARCHAR(100) NOT NULL,
   apellido VARCHAR(100) NOT NULL,
   especialidad_id INT NOT NULL,
-  matricula VARCHAR(50) UNIQUE,
+  matricula VARCHAR(100),
   FOREIGN KEY (especialidad_id) REFERENCES especialidades(id)
 );
 
@@ -41,13 +32,16 @@ CREATE TABLE IF NOT EXISTS turnos (
   id INT AUTO_INCREMENT PRIMARY KEY,
   paciente_id INT NOT NULL,
   profesional_id INT NOT NULL,
+  especialidad_id INT NOT NULL,
   fecha DATE NOT NULL,
   hora TIME NOT NULL,
-  estado ENUM('pendiente','confirmado','cancelado','reprogramado','atendido') DEFAULT 'pendiente',
-  UNIQUE KEY uq_turno (profesional_id, fecha, hora),
+  estado ENUM('Pendiente','Confirmado','Reprogramado','Cancelado') DEFAULT 'Pendiente',
   FOREIGN KEY (paciente_id) REFERENCES pacientes(id),
-  FOREIGN KEY (profesional_id) REFERENCES profesionales(id)
+  FOREIGN KEY (profesional_id) REFERENCES profesionales(id),
+  FOREIGN KEY (especialidad_id) REFERENCES especialidades(id)
 );
+
+
 
 -- ============================================
 --  PROCEDIMIENTO almacenado

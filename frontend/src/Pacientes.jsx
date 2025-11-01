@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
-import { api } from './api'
 import { NavLink } from 'react-router-dom'
-import { Header } from './Header'
+import { api } from './api'
 
 export function Pacientes() {
   const [list, setList] = useState([])
-  const [form, setForm] = useState({ dni:'', nombre:'', apellido:'', direccion:'', telefono:'' })
+  const [form, setForm] = useState({ dni: '', nombre: '', apellido: '', direccion: '', telefono: '' })
   const [editingId, setEditingId] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -13,10 +12,12 @@ export function Pacientes() {
   // --- Cargar lista ---
   const cargar = async () => {
     setLoading(true)
+    setError('')
     try {
       const r = await api.get('/pacientes')
       setList(r.data)
     } catch (e) {
+      console.error('Error cargando pacientes:', e.response?.data || e.message)
       setError('No se pudieron cargar pacientes')
     } finally {
       setLoading(false)
@@ -29,17 +30,33 @@ export function Pacientes() {
   const onSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setLoading(true)
     try {
-      if (editingId) {
-        await api.put(`/pacientes/${editingId}`, form)
-      } else {
-        await api.post('/pacientes', form)
+      const payload = {
+        ...form,
+        dni: form.dni === '' ? null : Number(form.dni)
       }
-      setForm({ dni:'', nombre:'', apellido:'', direccion:'', telefono:'' })
+
+      if (!payload.dni || Number.isNaN(payload.dni)) {
+        setError('El DNI debe ser un número válido.')
+        setLoading(false)
+        return
+      }
+
+      if (editingId) {
+        await api.put(`/pacientes/${editingId}`, payload)
+      } else {
+        await api.post('/pacientes', payload)
+      }
+
+      setForm({ dni: '', nombre: '', apellido: '', direccion: '', telefono: '' })
       setEditingId(null)
       await cargar()
     } catch (e) {
+      console.error('Error guardando paciente:', e.response?.data || e.message)
       setError('Error guardando el paciente. Verifique DNI único y campos obligatorios.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -47,22 +64,34 @@ export function Pacientes() {
   const onEdit = (p) => {
     setEditingId(p.id)
     setForm({
-      dni: p.dni, nombre: p.nombre, apellido: p.apellido,
-      direccion: p.direccion ?? '', telefono: p.telefono ?? ''
+      dni: p.dni ?? '',
+      nombre: p.nombre ?? '',
+      apellido: p.apellido ?? '',
+      direccion: p.direccion ?? '',
+      telefono: p.telefono ?? ''
     })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   // --- Eliminar paciente ---
   const onDelete = async (id) => {
     if (!confirm('¿Eliminar paciente?')) return
-    await api.delete(`/pacientes/${id}`)
-    await cargar()
+    setLoading(true)
+    try {
+      await api.delete(`/pacientes/${id}`)
+      await cargar()
+    } catch (e) {
+      console.error('Error eliminando paciente:', e.response?.data || e.message)
+      setError('No se pudo eliminar el paciente.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   // --- Cancelar edición ---
   const onCancel = () => {
     setEditingId(null)
-    setForm({ dni:'', nombre:'', apellido:'', direccion:'', telefono:'' })
+    setForm({ dni: '', nombre: '', apellido: '', direccion: '', telefono: '' })
   }
 
   return (
@@ -72,32 +101,32 @@ export function Pacientes() {
         <div className="container-fluid">
           <ul className="nav nav-tabs border-0">
             <li className="nav-item">
-              <NavLink to="/dashboard" end className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+              <NavLink to="/dashboard" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                 Dashboard
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/pacientes" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+              <NavLink to="/pacientes" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                 Pacientes
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/calendario" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+              <NavLink to="/calendario" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                 Calendario
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/especialidades" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+              <NavLink to="/especialidades" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                 Especialidades
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/reportes" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+              <NavLink to="/reportes" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                 Reportes
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/profesionales" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+              <NavLink to="/profesionales" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                 Profesionales
               </NavLink>
             </li>
@@ -122,7 +151,7 @@ export function Pacientes() {
               type="number"
               className="form-control"
               value={form.dni}
-              onChange={e => setForm({ ...form, dni: e.target.value })}
+              onChange={(e) => setForm({ ...form, dni: e.target.value })}
               required
             />
           </div>
@@ -131,7 +160,7 @@ export function Pacientes() {
             <input
               className="form-control"
               value={form.nombre}
-              onChange={e => setForm({ ...form, nombre: e.target.value })}
+              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
               required
             />
           </div>
@@ -140,7 +169,7 @@ export function Pacientes() {
             <input
               className="form-control"
               value={form.apellido}
-              onChange={e => setForm({ ...form, apellido: e.target.value })}
+              onChange={(e) => setForm({ ...form, apellido: e.target.value })}
               required
             />
           </div>
@@ -149,7 +178,7 @@ export function Pacientes() {
             <input
               className="form-control"
               value={form.direccion}
-              onChange={e => setForm({ ...form, direccion: e.target.value })}
+              onChange={(e) => setForm({ ...form, direccion: e.target.value })}
             />
           </div>
           <div className="col-md-3">
@@ -157,7 +186,7 @@ export function Pacientes() {
             <input
               className="form-control"
               value={form.telefono}
-              onChange={e => setForm({ ...form, telefono: e.target.value })}
+              onChange={(e) => setForm({ ...form, telefono: e.target.value })}
             />
           </div>
           <div className="col-12 d-flex gap-2">
@@ -165,16 +194,12 @@ export function Pacientes() {
               {editingId ? 'Guardar cambios' : 'Agregar'}
             </button>
             {editingId && (
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={onCancel}
-              >
+              <button type="button" className="btn btn-secondary" onClick={onCancel}>
                 Cancelar
               </button>
             )}
           </div>
-          {error && <div className="text-danger">{error}</div>}
+          {error && <div className="text-danger mt-2">{error}</div>}
         </form>
 
         <div className="card">
@@ -205,16 +230,10 @@ export function Pacientes() {
                         <td>{p.direccion ?? ''}</td>
                         <td>{p.telefono ?? ''}</td>
                         <td className="d-flex gap-2">
-                          <button
-                            className="btn btn-sm btn-outline-secondary"
-                            onClick={() => onEdit(p)}
-                          >
+                          <button className="btn btn-sm btn-outline-secondary" onClick={() => onEdit(p)}>
                             Editar
                           </button>
-                          <button
-                            className="btn btn-sm btn-outline-danger"
-                            onClick={() => onDelete(p.id)}
-                          >
+                          <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(p.id)}>
                             Eliminar
                           </button>
                         </td>
