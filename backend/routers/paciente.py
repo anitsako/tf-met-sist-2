@@ -1,68 +1,54 @@
 from typing import List
-from fastapi import APIRouter, HTTPException
-from schemas.paciente import Paciente ,PacienteIn
+from fastapi import APIRouter, HTTPException, status
+from schemas.paciente import Paciente, PacienteIn
 from config.database import db
-
 
 router = APIRouter()
 
-@router.get('/', response_model=List[Paciente])
+@router.get("/", response_model=List[Paciente])
 async def traer_pacientes():
-    query = "SELECT * FROM pacientes"
-    rows = await db.fetch_all(query=query)
+    rows = await db.fetch_all("SELECT * FROM pacientes")
     return rows
 
-
-@router.get('/{id}', response_model=[Paciente])
+@router.get("/{paciente_id}", response_model=Paciente)
 async def traer_un_paciente(paciente_id: int):
-    query = "SELECT * FROM pacientes WHERE id = :id"
-    row = await db.fetch_one(query=query, values={"id":paciente_id})
+    row = await db.fetch_one("SELECT * FROM pacientes WHERE id=:id", {"id": paciente_id})
     if not row:
         raise HTTPException(status_code=404, detail="Paciente no encontrado")
+    return row
 
-    return row    
-
-@router.post('/', response_model=[Paciente])
+@router.post("/", response_model=Paciente, status_code=status.HTTP_201_CREATED)
 async def crear_pacientes(paciente: PacienteIn):
     query = """
         INSERT INTO pacientes (dni, nombre, apellido, direccion, telefono)
         VALUES (:dni, :nombre, :apellido, :direccion, :telefono)
     """
-    last_record_id = await db.execute(query=query, values=paciente.dict())
-    return {**paciente.dict(), "id": last_record_id}
+    last_id = await db.execute(query=query, values=paciente.dict())
+    return {**paciente.dict(), "id": last_id}
 
-
-@router.put('/{id}', response_model=[Paciente])
+@router.put("/{paciente_id}", response_model=Paciente)
 async def modificar_pacientes(paciente_id: int, paciente: PacienteIn):
-
-    check_query = "SELECT * FROM pacientes WHERE id = :id"
-    existing = await db.fetch_one(check_query, {'id': paciente_id})
-    if not existing:
-        raise HTTPException(status_code=404, detail='Paciente no encontrado')
-
+    exist = await db.fetch_one("SELECT id FROM pacientes WHERE id=:id", {"id": paciente_id})
+    if not exist:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
     query = """
-            UPDATE pacientes SET 
-            dni = :dni,
-            nombre = :nombre,
-            apellido = :apellido,
-            direccion = :direccion,
-            telefono = :telefono,
-            WHERE id = :id
+        UPDATE pacientes
+        SET dni=:dni,
+            nombre=:nombre,
+            apellido=:apellido,
+            direccion=:direccion,
+            telefono=:telefono
+        WHERE id=:id
     """
-    values = {**paciente.dict(), "id": paciente_id}
-    await db.execute(query=query, values=values)
-    return {**paciente.dict(), "id" :paciente_id}
+    await db.execute(query=query, values={**paciente.dict(), "id": paciente_id})
+    return {**paciente.dict(), "id": paciente_id}
 
-@router.delete('/{id}', response_model=[Paciente])
+@router.delete("/{paciente_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def eliminar_pacientes(paciente_id: int):
-    check_query = "SELECT * FROM pacientes WHERE id = :id"
-    existing = await db.fetch_one(check_query, {"id": paciente_id})
-    if not existing:
-        raise HTTPException(status_code=404, detail='paciente no encontrado')
-    
-    query = "DELETE FROM pacientes WHERE id = :id"
-    await db.execute(query=query, values={"id": paciente_id})
+    exist = await db.fetch_one("SELECT id FROM pacientes WHERE id=:id", {"id": paciente_id})
+    if not exist:
+        raise HTTPException(status_code=404, detail="Paciente no encontrado")
 
-    return{'Message': f"paciente con ID {paciente_id} eliminado correctamente"}
-
+    await db.execute("DELETE FROM pacientes WHERE id=:id", {"id": paciente_id})
+    return

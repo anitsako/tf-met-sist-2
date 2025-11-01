@@ -1,19 +1,27 @@
-from pydantic import BaseModel
-from datetime import datetime
+from pydantic import BaseModel, field_validator
+from datetime import date, time
 
+class TurnoIn(BaseModel):
+    paciente_id: int
+    profesional_id: int
+    fecha: date
+    hora: time
 
-class TurnoAdd(BaseModel):
-    id_medico: int
-    id_paciente: int
-    fecha: datetime
-    estado: str | None = 'pendiente' #por defecto
-
-class TurnoUpdate(BaseModel):
-    estado: str
+    @field_validator("fecha")
+    @classmethod
+    def no_pasado(cls, v):
+        from datetime import date as d
+        if v < d.today():
+            raise ValueError("La fecha no puede ser pasada")
+        return v
 
 class Turno(BaseModel):
     id: int
-    id_medico: int
-    id_paciente: int
-    fecha: datetime
+    paciente_id: int
+    profesional_id: int
+    fecha: date
+    hora: time
     estado: str
+
+class TurnoEstadoUpdate(BaseModel):
+    estado: str  # pendiente | confirmado | cancelado | reprogramado | atendido
