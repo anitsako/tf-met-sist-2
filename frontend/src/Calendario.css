@@ -1,0 +1,117 @@
+.calendario-container {
+  background-color: #f5f7fa;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Estilos para el calendario */
+.calendario-container .react-calendar {
+  width: 100% !important;
+  border: none !important;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  font-family: inherit;
+}
+
+.react-calendar__tile--active {
+  background: #0780df !important;
+  color: white !important;
+}
+
+.react-calendar__tile--now {
+  background: #e3f2fd !important;
+  border: 2px solid #0780df;
+}
+
+.react-calendar__tile:hover {
+  background: #f0f0f0 !important;
+}
+
+.react-calendar__navigation button {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Marcar días con turnos */
+.react-calendar__tile.tiene-turnos {
+  position: relative;
+  font-weight: 600;
+}
+
+.react-calendar__tile.tiene-turnos::after {
+  content: '●';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #0780df;
+  font-size: 16px;  /* Más grande */
+  font-weight: bold;
+}
+
+/* Lista de turnos */
+.turnos-lista {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.turno-card {
+  border-left: 4px solid #0780df;
+  transition: transform 0.2s;
+}
+
+.turno-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Cards */
+.card {
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.card-title {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Badges */
+.badge {
+  padding: 0.4rem 0.8rem;
+  font-weight: 500;
+  border-radius: 20px;
+}
+
+/* Navegación */
+.nav-tabs .nav-link {
+  color: #6c757d;
+  border: none;
+  padding: 1rem 1.5rem;
+}
+
+.nav-tabs .nav-link.active {
+  color: #0780df;
+  border-bottom: 3px solid #0780df;
+  background: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #0780df;
+  border: none;
+}
+
+#person-logo {
+  width: 28px;
+  height: auto;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .col-lg-5,
+  .col-lg-7 {
+    margin-bottom: 20px;
+  }
+}
