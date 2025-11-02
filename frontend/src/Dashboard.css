@@ -140,3 +140,28 @@
     font-size: 0.875rem;
   }
 }
+
+/* Se modifico el encabezado en donde figura el nombre del mes */
+
+.react-calendar__navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.react-calendar__navigation__label {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1rem;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  white-space: normal !important;
+  overflow: visible !important;
+}
+
+.react-calendar__navigation button {
+  font-size: 1rem;
+  font-weight: bold;
+  min-width: auto;
+}
