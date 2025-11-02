@@ -9,29 +9,37 @@ import { api } from "./api";
 export function Dashboard() {
   const [fecha, setFecha] = useState(new Date());
   const [lista, setLista] = useState([])
+  const [citasPendientes, setCitasPendientes] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-      const cargar = async () => {
+      const cargarTurnos = async () => {
+        setLoading(true);
       try {
         const response = await api.get("/turnos")
         setLista(response.data)
-        console.log(response.data)
       } catch(e) {
-        console.error("error al cargar los turnos", e)
+        console.error("error al cargar los turnos:", e);
+      } finally {
+        setLoading(false);
       }
-  }
-    cargar()
-  }, [])
+  };
+    cargarTurnos();
+  }, []);
 
-
-  const citasPendientes = [
-    { paciente: "Juan Perez", hora: "10:00 AM - 11:30" },
-    { paciente: "Ana Rodriguez", doctor: "Dra. Lopez" },
-  ];
-
+// Cargar citas pendientes desde la API
   
-
-  const citas = []; 
+useEffect(() => {
+  const  cargarPendientes = async () => {
+    try {
+      const response = await api.get("/turnos/pendientes/hoy");
+      setCitasPendientes(response.data);
+    } catch (e) {
+      console.error("Error al cargar citas pendientes:", e);
+    }
+  };
+  cargarPendientes();
+}, []);
 
   return (
     <>
@@ -101,28 +109,30 @@ export function Dashboard() {
               <div className="card">
                 <div className="card-body">
                   <h5 className="card-title">Citas Pendientes</h5>
+                  {citasPendientes.length === 0 ? (
+                    <p className="text-muted text-center">No hay citas pendientes</p>
+                  ) : (
                   <ul className="list-group list-group-flush">
-                    {citasPendientes.map((cita, i) => (
-                      <li key={i} className="list-group-item">
+                    {citasPendientes.map((cita) => (
+                      <li key={cita.id} className="list-group-item">
                         <strong>Paciente:</strong> {cita.paciente}
-                        {cita.hora && (
-                          <>
-                            <br />
-                            <small>{cita.hora}</small>
-                          </>
-                        )}
-                        {cita.doctor && (
-                          <>
-                            <br />
-                            <small>{cita.doctor}</small>
-                          </>
-                        )}
-                      </li>
+                        <br />
+                        <small className="text-muted">{cita.fecha} a las {cita.hora}</small> 
+                        <br /> 
+                        <small className="text-muted">{cita.profesional} - {cita.especialidad}</small> 
+                        <br />
+                        <span className={`badge ${
+                            cita.estado === 'Confirmado' ? 'bg-success' : 'bg-warning'
+                          } mt-1`}>
+                            {cita.estado}
+                          </span>
+                          </li>
                     ))}
-                  </ul>
+                    </ul>
+                  )}
+                  </div>
                 </div>
               </div>
-            </div>
 
             {/* Derecha */}
             <div className="col-md-8">
@@ -148,21 +158,36 @@ export function Dashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {lista.length === 0 ? (
+                      {loading ? (
+                        <tr>
+                          <td colSpan="6" className="text-center">
+                            Cargando...
+                          </td>
+                        </tr>
+                      ) : lista.length === 0 ? (
                           <tr>
                             <td colSpan="6" className="text-center text-muted">
                               Sin datos
                             </td>
                           </tr>
                         ) : (
-                          lista.map((cita, idx) => (
-                            <tr key={idx}>
+                          lista.map((cita) => (
+                            <tr key={cita.id}>
                               <td>{cita.fecha}</td>
                               <td>{cita.hora}</td>
                               <td>{cita.paciente}</td>
                               <td>{cita.profesional}</td>
                               <td>{cita.especialidad}</td>
-                              <td>{cita.estado}</td>
+                              <td>
+                                <span className={`badge ${
+                                  cita.estado === 'Confirmado' ? 'bg-success' :
+                                  cita.estado === 'Pendiente' ? 'bg-warning' :
+                                  cita.estado === 'Reprogramado' ? 'bg-info' :
+                                  'bg-secondary'
+                                }`}>
+                                  {cita.estado}
+                                  </span>
+                                </td>
                             </tr>
                           ))
                         )}
@@ -172,7 +197,6 @@ export function Dashboard() {
                 </div>
               </div>
             </div>
-            {/* /Derecha */}
           </div>
         </div>
       </div>

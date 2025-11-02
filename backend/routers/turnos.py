@@ -61,6 +61,30 @@ async def eliminar_turno(turno_id: int):
     await db.execute("DELETE FROM turnos WHERE id=:id", {"id": turno_id})
     return
 
+    #  --- Citas Pendientes ---
+@router.get("/pendientes/hoy", response_model=List[TurnoOut])
+async def turnos_pendientes_hoy():
+    """Devuelve turnos pendientes para hoy y dias siguientes"""
+    query = """
+        SELECT
+            t.id,
+            t.fecha,
+            TIME_FORMAT(t.hora, '%H:%i') AS hora,
+            t.estado,
+            CONCAT(p.nombre, ' ', p.apellido) AS paciente,
+            CONCAT(prof.nombre, ' ', prof.apellido) AS profesional,
+            e.nombre AS especialidad
+        FROM turnos t
+        JOIN pacientes p ON t.paciente_id = p.id
+        JOIN profesionales prof ON t.profesional_id = prof.id
+        JOIN especialidades e ON e.id = prof.especialidad_id
+        WHERE t.estado IN ('Pendiente', 'Confirmado')
+          AND t.fecha >= CURDATE()
+        ORDER BY t.fecha, t.hora
+        LIMIT 5
+    """    
+    return await db.fetch_all(query)
+
 # -------- Reportes (para el Dashboard) --------
 
 @router.get("/reporte/agenda")
