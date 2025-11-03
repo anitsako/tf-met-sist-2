@@ -1,0 +1,17 @@
+@url=http://127.0.0.1:8000
+
+### GET de clientes
+GET {{url}}/clientes/
+
+### POST Login
+POST {{url}}/clientes/
+Content-Type: application/json
+
+{
+    "dni" : 46869995,
+    "nombre" : "Octavio",
+    "apellido" : "Moya",
+    "direccion": "pepe12@gmail.com",
+    "telefono": "3804871168",
+    "contraseña": "hola1234"
+}

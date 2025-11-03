@@ -1,23 +1,36 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config.database import db
-from routers import clientes, pacientes, especialidad, turnos, profesionales
+from routers import clientes, pacientes, especialidad, turnos, profesionales, auth
 
 app = FastAPI()
 
 # CORS: permite al front (Vite) llamar al backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Conectar/desconectar DB automáticamente
+# @app.on_event("startup")
+# async def startup():
+#     await db.connect()
+
+# @app.on_event("shutdown")
+# async def shutdown():
+#     await db.disconnect()
+
 @app.on_event("startup")
 async def startup():
-    await db.connect()
+    try:
+        print("🔌 Intentando conectar a la base de datos...")
+        await db.connect()
+        print("✅ Conexión exitosa a la base de datos.")
+    except Exception as e:
+        print("❌ Error al conectar a la base de datos:", e)
 
 @app.on_event("shutdown")
 async def shutdown():
@@ -42,3 +55,4 @@ app.include_router(pacientes.router,     prefix="/pacientes",      tags=["Pacien
 app.include_router(especialidad.router,  prefix="/especialidades", tags=["Especialidades"])
 app.include_router(profesionales.router, prefix="/profesionales",  tags=["Profesionales"])
 app.include_router(turnos.router,        prefix="/turnos",         tags=["Turnos"])
+app.include_router(auth.router,          prefix="/auth",           tags=["Authentication"])

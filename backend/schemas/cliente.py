@@ -7,6 +7,7 @@ class ClienteIn(BaseModel):
     apellido: str
     direccion: str | None = None
     telefono: str | None = None
+    contraseña: str
 
 class Cliente(BaseModel):
     id: int
@@ -15,3 +16,8 @@ class Cliente(BaseModel):
     apellido: str
     direccion: str | None = None
     telefono: str | None = None
+
+
+class ClienteLogin(BaseModel):
+    direccion: str
+    contraseña: str
