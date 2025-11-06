@@ -1,4 +1,3 @@
-// frontend/src/Especialidades.jsx
 import { useEffect, useState } from 'react'
 import { api } from './api'
 import { NavLink } from "react-router-dom";

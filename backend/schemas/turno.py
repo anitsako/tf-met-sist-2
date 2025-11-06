@@ -1,6 +1,5 @@
 from pydantic import BaseModel, field_validator
 from datetime import date, time
-from typing import Optional
 
 class TurnoIn(BaseModel):
     paciente_id: int
@@ -27,11 +26,11 @@ class Turno(BaseModel):
 class TurnoOut(BaseModel):
     id: int
     fecha: date
-    hora: time
+    hora: str        # <- formateada '%H:%i'
     estado: str
     paciente: str
     profesional: str
     especialidad: str
 
 class TurnoEstadoUpdate(BaseModel):
-    estado: str  # pendiente | confirmado | cancelado | reprogramado | atendido
+    estado: str  # 'pendiente' | 'confirmado' | 'cancelado' | 'reprogramado'

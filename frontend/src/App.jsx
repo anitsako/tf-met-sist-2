@@ -5,11 +5,10 @@ import { Dashboard } from "./Dashboard";
 import { Header } from "./Header";
 import { Pacientes } from "./Pacientes";
 import { Especialidades } from "./Especialidades";
-import { Profesionales } from "./Profesionales";  // ✅ componente real
+import { Profesionales } from "./Profesionales";
 import { TurnoForm } from "./TurnoForm";
 import { Calendario } from "./Calendario";
-
-function Reportes() { return <div className="container py-4"><h3>Reportes</h3></div>; }
+import { Reportes } from "./Reportes";
 
 function App() {
   return (
@@ -22,7 +21,7 @@ function App() {
         <Route path="/especialidades" element={<><Header compact /><Especialidades /></>} />
         <Route path="/profesionales" element={<><Header compact /><Profesionales /></>} />
         <Route path="/calendario" element={<Calendario />} />
-        <Route path="/reportes" element={<><Header compact /><Reportes /></>} />
+        <Route path="/reportes" element={<Reportes />} />
       </Routes>
     </BrowserRouter>
   );

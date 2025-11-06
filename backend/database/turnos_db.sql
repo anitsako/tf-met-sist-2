@@ -1,8 +1,8 @@
 USE railway;
 
--- ============================================
+-- ======================
 --  TABLAS
--- ============================================
+-- ======================
 
 CREATE TABLE IF NOT EXISTS pacientes (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -28,25 +28,26 @@ CREATE TABLE IF NOT EXISTS profesionales (
   FOREIGN KEY (especialidad_id) REFERENCES especialidades(id)
 );
 
-CREATE TABLE IF NOT EXISTS turnos (
+-- borra la tabla turnos si existe para recrearla limpia (cuidado)
+DROP TABLE IF EXISTS turnos;
+
+CREATE TABLE turnos (
   id INT AUTO_INCREMENT PRIMARY KEY,
   paciente_id INT NOT NULL,
   profesional_id INT NOT NULL,
-  especialidad_id INT NOT NULL,
   fecha DATE NOT NULL,
   hora TIME NOT NULL,
-  estado ENUM('Pendiente','Confirmado','Reprogramado','Cancelado') DEFAULT 'Pendiente',
-  FOREIGN KEY (paciente_id) REFERENCES pacientes(id),
-  FOREIGN KEY (profesional_id) REFERENCES profesionales(id),
-  FOREIGN KEY (especialidad_id) REFERENCES especialidades(id)
+  estado ENUM('pendiente','confirmado','reprogramado','cancelado') DEFAULT 'pendiente',
+  notas VARCHAR(255),
+  CONSTRAINT fk_turno_paciente FOREIGN KEY (paciente_id) REFERENCES pacientes(id),
+  CONSTRAINT fk_turno_prof FOREIGN KEY (profesional_id) REFERENCES profesionales(id),
+  CONSTRAINT uq_turno_slot UNIQUE (profesional_id, fecha, hora)
 );
 
-
-
--- ============================================
---  PROCEDIMIENTO almacenado
--- ============================================
-
+-- ======================
+--  PROCEDIMIENTO
+-- ======================
+DROP PROCEDURE IF EXISTS sp_asignar_turno;
 DELIMITER //
 CREATE PROCEDURE sp_asignar_turno(
   IN p_paciente_id INT,
@@ -65,10 +66,10 @@ BEGIN
 
   IF EXISTS (
     SELECT 1 FROM turnos
-     WHERE profesional_id = p_profesional_id
-       AND fecha = p_fecha
-       AND hora  = p_hora
-       AND estado IN ('pendiente','confirmado','reprogramado')
+    WHERE profesional_id = p_profesional_id
+      AND fecha = p_fecha
+      AND hora  = p_hora
+      AND estado IN ('pendiente','confirmado','reprogramado')
   ) THEN
     ROLLBACK;
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Horario ocupado';
@@ -81,10 +82,9 @@ BEGIN
 END //
 DELIMITER ;
 
--- ============================================
+-- ======================
 --  DATOS DE PRUEBA
--- ============================================
-
+-- ======================
 INSERT IGNORE INTO especialidades (id, nombre, descripcion)
 VALUES (1,'Clínica Médica','Atención general');
 
@@ -94,8 +94,6 @@ VALUES (1,'Laura','López',1,'M-1234');
 INSERT IGNORE INTO pacientes (id, dni, nombre, apellido, direccion, telefono)
 VALUES (1, 30111222, 'Juan', 'Pérez', 'Av. Siempre Viva 742', '380-555-000');
 
-SHOW TABLES;
-SHOW PROCEDURE STATUS WHERE Db = 'railway';
-
-CALL sp_asignar_turno(1, 1, '2025-11-05', '10:30:00');
+-- prueba
+CALL sp_asignar_turno(1, 1, '2025-11-06', '10:30:00');
 SELECT * FROM turnos;

@@ -1,4 +1,3 @@
-// src/assets/TurnoForm.jsx
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { api } from './api'
@@ -24,9 +23,13 @@ export function TurnoForm({ onCreated }) {
     hora: data.hora,
   }
 
-    await api.post('/turnos', turno)     // en backend esto llama al SP
-    reset()
-    onCreated?.()
+ try {
+  await api.post('/turnos', turno);
+  reset();
+  onCreated?.();
+} catch (e) {
+  alert(e?.response?.data?.detail || 'Error creando turno');
+}
   }
 
   return (
