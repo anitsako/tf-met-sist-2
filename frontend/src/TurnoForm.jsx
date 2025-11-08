@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { api } from './api'
-import { Header } from './Header'
 import { NavLink } from 'react-router-dom'
 
 export function TurnoForm({ onCreated }) {
@@ -36,7 +35,6 @@ export function TurnoForm({ onCreated }) {
 
   return (
     <>
-      <Header compact/>
 
       <nav className="navbar navbar-expand-lg navbar-light bg-light mb-4">
           <div className="container-fluid">

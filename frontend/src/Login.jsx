@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useState } from 'react'
 import './login.css'
 import { useAuth } from './AuthContext'
@@ -7,6 +7,7 @@ import { useAuth } from './AuthContext'
 // #ebeff8 color para hero dashboard
 
 export function Login() {
+    const navigate = useNavigate()
     const { login } = useAuth()
     const [direccion, setDireccion] = useState('')
     const [contraseña, setContraseña] = useState('')
@@ -15,7 +16,6 @@ export function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError(null)
-        //Por ahora navega directo al dashboard (sin validar)
 
         try {
 
@@ -41,6 +41,7 @@ export function Login() {
         }
 
     }
+
     return (
         <>
             <form className='login-form' onSubmit={handleSubmit}>
@@ -53,8 +54,10 @@ export function Login() {
                     <p id='continua'>O continua con</p>
                         <a className='logos' target='blank' href='https://www.google.com/?hl=es&safe=active&ssui=on'><img src="/google.svg" id='google-logo' alt="google logo" /></a>
                     <button type="submit">Iniciar sesión</button>
-                    <p style={{color: 'black'}}>No tienes una cuenta? <a href="">Registrarse</a></p>
             </form>
+                   <p style={{color: 'black', textAlign: 'center', marginTop: '10px'}}>
+                        No tienes una cuenta? <Link to='/registrarse'>Registrarse</Link>
+                    </p>
         </>
     )
 }

@@ -5,10 +5,8 @@ const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
     const navigate = useNavigate()
-    const [user, setUser] = useState(() => {
-        const savedUser = localStorage.getItem('user')
-        return savedUser ? JSON.parse(savedUser) : null
-    })
+    const [user, setUser] = useState(null)
+    const [loading, setLoading] = useState(true)
     
     const login = (userData) => {
         setUser(userData)
@@ -22,12 +20,18 @@ export const AuthProvider = ({ children }) => {
         navigate('/')
     }
     
-    useEffect(() => {
-        if(!user && window.location.pathname !== '/') {
-            navigate('/') // Iniciar sesión
-        }
-    }, [user, navigate])
     
+    useEffect(() => {
+        if(user) {
+            localStorage.setItem('user', JSON.stringify(user))
+        } else {
+            localStorage.removeItem('user')
+        }
+
+
+    }, [user])
+
+
     return (
         <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>
     )

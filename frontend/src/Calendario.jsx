@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { data, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./Calendario.css";
 import { api } from "./api";
-import { Header } from "./Header";
 
 export function Calendario() {
     const navigate = useNavigate();
@@ -13,7 +12,7 @@ export function Calendario() {
     const [turnosDia, setTurnosDia] = useState([]);
     const [profesionales, setProfesionales] = useState([]);
     const [especialidades, setEspecialidades] = useState([]);
-    const [filtroProfesional, setFiltroProfecional] = useState("");
+    const [filtroProfesional, setFiltroProfesional] = useState("");
     const [filtroEspecialidad, setFiltroEspecialidad] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -106,7 +105,6 @@ useEffect(() => {
 
  return (
     <>
-    <Header compact />
     <div className="calendario-container">
       {/* NAV */}
       <nav className="navbar navbar-expand-lg navbar-light bg-light mb-4">

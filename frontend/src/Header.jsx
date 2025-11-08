@@ -1,5 +1,6 @@
 import './index.css'
 import { useAuth } from './AuthContext'
+import { Link } from 'react-router-dom'
 
 // Se agregó una clase para agrupar el logo con el título correctamente alineado
 export function Header({ compact = false }) {
@@ -16,14 +17,14 @@ export function Header({ compact = false }) {
     
         {user && (
             <div className="header-right">
-            <img
-            src="/person-circle.svg"
-            id="person-logo"
-            alt="person logo"
-            style={{ width: 40 }}
-            />
-            <span>{user.usuario}</span>
-        </div>
+              <img
+              src="/person-circle.svg"
+              id="person-logo"
+              alt="person logo"
+              style={{ width: 40 }}
+              />
+              <span>{user.usuario}</span>
+            </div>
         )}
 
         </header>
