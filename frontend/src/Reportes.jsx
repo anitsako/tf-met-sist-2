@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { api } from "./api";
 import { Header } from "./Header";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 import {
   ResponsiveContainer,
@@ -70,10 +72,164 @@ export function Reportes() {
     return { totalTurnos, pendientes, confirmados, reprogramados, cancelados };
   }, [barrasPorEspecialidad, tortaPorEstado]);
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]; // colores por estado
+
+  //Funcion para exportar a PDF 
+  const exportarPDF = () => {
+    const doc = new jsPDF();
+    const fechaHoy = new Date().toLocaleDateString('es-AR');
+
+    //Titulo
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+
+    doc.setTextColor(0, 0, 0);
+    doc.text('CLINICA', 14, 20);
+
+    doc.setTextColor(7, 128, 223);
+    doc.text('SALUD', 55, 20);
+    
+    // Subtítulo
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Reporte de Turnos', 14, 30);
+  
+  // Fecha
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Generado: ${fechaHoy}`, 14, 36);
+  
+  // Línea separadora
+    doc.setDrawColor(7, 128, 223);
+    doc.setLineWidth(0.5);
+    doc.line(14, 40, 196, 40);
+    
+    let yPos = 45;
+
+    // Seccion 1: KPis
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text('Resumen General', 14, yPos);
+    yPos += 8;
+    
+    doc.setFontSize(11);
+    doc.text(`• Total de turnos: ${kpis.totalTurnos}`, 20, yPos);
+    yPos += 6;
+    doc.text(`• Confirmados: ${kpis.confirmados}`, 20, yPos);
+    yPos += 6;
+    doc.text(`• Pendientes: ${kpis.pendientes}`, 20, yPos);
+    yPos += 6;
+    doc.text(`• Reprogramados: ${kpis.reprogramados}`, 20, yPos);
+    yPos += 6;
+    doc.text(`• Cancelados: ${kpis.cancelados}`, 20, yPos);
+    yPos += 12;
+
+    //Seccion 2: proximos turnos
+   doc.setFontSize(14);
+    doc.text('Próximos Turnos (Pendientes/Confirmados)', 14, yPos);
+    yPos += 5;
+    
+    if (agenda.length > 0) {
+      const agendaRows = agenda.map(t => [
+        t.fecha,
+        t.hora,
+        t.paciente,
+        t.profesional,
+        t.especialidad,
+        t.estado
+      ]);
+      
+      autoTable(doc, {
+  head: [['Fecha', 'Hora', 'Paciente', 'Profesional', 'Especialidad', 'Estado']],
+  body: agendaRows,
+  startY: yPos,
+  headStyles: { fillColor: [7, 128, 223], textColor: [255, 255, 255], fontStyle: 'bold' },
+  styles: { fontSize: 9, cellPadding: 3 },
+  columnStyles: { 0: { cellWidth: 25 }, 1: { cellWidth: 20 }, 5: { halign: 'center' } }
+});
+      
+      yPos = doc.lastAutoTable.finalY + 12;
+    } else {
+      doc.setFontSize(10);
+      doc.setTextColor(150, 150, 150);
+      doc.text('No hay turnos próximos', 14, yPos + 5);
+      yPos += 15;
+    } 
+
+    // Seccion 3: Top profecionales
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text('Profesionales', 14, yPos);
+    yPos += 5;
+    
+    if (topProfes.length > 0) {
+      const topRows = topProfes.map(p => [
+        p.profesional,
+        p.total_turnos
+      ]);
+      
+      autoTable(doc, {
+  head: [['Profesional', 'Total de Turnos']],
+  body: topRows,
+  startY: yPos,
+  headStyles: { fillColor: [7, 128, 223], textColor: [255, 255, 255], fontStyle: 'bold' },
+  styles: { fontSize: 10, cellPadding: 4 },
+  columnStyles: { 0: { cellWidth: 120 }, 1: { halign: 'center', cellWidth: 60 } }
+});
+      
+      yPos = doc.lastAutoTable.finalY + 12;
+    }
+
+    // Seccion 4: Turnos por especialidad
+    if (yPos > 240) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    doc.setFontSize(14);
+    doc.text('Turnos por Especialidad', 14, yPos);
+    yPos += 5;
+    
+    if (barrasPorEspecialidad.length > 0) {
+      const espRows = barrasPorEspecialidad.map(e => [
+        e.especialidad,
+        e.total
+      ]);
+      
+      autoTable(doc, {
+  head: [['Especialidad', 'Total']],
+  body: espRows,
+  startY: yPos,
+  headStyles: { fillColor: [7, 128, 223], textColor: [255, 255, 255], fontStyle: 'bold' },
+  styles: { fontSize: 10, cellPadding: 4 },
+  columnStyles: { 1: { halign: 'center' } }
+});
+    }
+
+    //Pie de pagina
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(
+        `Página ${i} de ${pageCount}`,
+        doc.internal.pageSize.width / 2,
+        doc.internal.pageSize.height - 10,
+        { align: 'center' }
+      );
+    }
+
+    //Descargar 
+    doc.save(`reporte-turnos-${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
+    const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]; // colores por estado
+
 
   return (
     <>
+
       {/* NAV con NavLink */}
       <nav className="navbar navbar-expand-lg navbar-light bg-light mb-4">
         <div className="container-fluid">
@@ -116,7 +272,16 @@ export function Reportes() {
       </nav>
 
       <div className="container py-3">
-        <h3 className="mb-3">Reportes</h3>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h3 className="mb-0">Reportes</h3>
+          <button 
+            className="btn btn-danger" 
+            onClick={exportarPDF}
+            disabled={loading}
+          >
+             Exportar a PDF
+          </button>
+        </div>
 
         {err && <div className="alert alert-danger">{err}</div>}
         {loading && <div>Cargando…</div>}
