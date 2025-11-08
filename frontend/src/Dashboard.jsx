@@ -5,8 +5,11 @@ import "react-calendar/dist/Calendar.css";
 import "./Dashboard.css";
 import { Header } from "./Header";
 import { api } from "./api";
+import { useAuth } from './AuthContext'
+
 
 export function Dashboard() {
+  const { user, logout } = useAuth()
   const [fecha, setFecha] = useState(new Date());
   const [lista, setLista] = useState([])
   const [citasPendientes, setCitasPendientes] = useState([]);
@@ -16,8 +19,9 @@ export function Dashboard() {
       const cargarTurnos = async () => {
         setLoading(true);
       try {
-        const response = await api.get("/turnos")
+        const response = await api.get("/turnos/")
         setLista(response.data)
+        console.log(response.data)
       } catch(e) {
         console.error("error al cargar los turnos:", e);
       } finally {
@@ -32,8 +36,9 @@ export function Dashboard() {
 useEffect(() => {
   const  cargarPendientes = async () => {
     try {
-      const response = await api.get("/turnos/pendientes/hoy");
+      const response = await api.get("/turnos/pendientes/hoy/");
       setCitasPendientes(response.data);
+      console.log(response.data)
     } catch (e) {
       console.error("Error al cargar citas pendientes:", e);
     }
@@ -88,7 +93,7 @@ useEffect(() => {
 
             <div className="ms-auto d-flex align-items-center">
               <span className="me-3">
-                <img src="/person-circle.svg" id="person-logo" alt="person logo" /> Dr. García
+                {user && ( <button className="nav-tabs btn btn-secondary"  onClick={logout}>Cerrar sesión</button> )}
               </span>
             </div>
           </div>

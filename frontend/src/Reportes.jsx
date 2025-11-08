@@ -113,9 +113,6 @@ export function Reportes() {
           </ul>
 
           <div className="ms-auto d-flex align-items-center">
-            <span className="me-3">
-              <img src="/person-circle.svg" id="person-logo" alt="person logo" /> Dr. García
-            </span>
           </div>
         </div>
       </nav>

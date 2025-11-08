@@ -79,7 +79,24 @@ button:focus-visible {
   border-bottom: 1px solid #dfdfdf;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px;
   color: black;
+  justify-content: space-between;
   box-sizing: border-box;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* separa el ícono del texto */
+  margin-left: 25px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 25px;
+  font-size: 18px;
+  font-weight: 500;
 }
 
 #logo-clinica {

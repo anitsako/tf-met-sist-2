@@ -1,15 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import './login.css'
-import { Dashboard } from './Dashboard'
-
+import { useAuth } from './AuthContext'
 // #51acea color para calendario de turnos
 // #d3d5d4 color para letras claras
 // #ebeff8 color para hero dashboard
 
 export function Login() {
-    const navigate = useNavigate()
-    const [session, setSession] = useState(null)
+    const { login } = useAuth()
     const [direccion, setDireccion] = useState('')
     const [contraseña, setContraseña] = useState('')
     const [error, setError] = useState(null)
@@ -27,6 +25,8 @@ export function Login() {
                 body: JSON.stringify({ direccion, contraseña })
             })
             
+            const data = await response.json()
+            
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}))
                 const msg = errorData?.detail || 'Error en la petición'
@@ -34,17 +34,15 @@ export function Login() {
                 console.error(msg)
                 return
             }
-            const session = await response.json()
-            setSession(session)
+            login(data)
         } catch(e) {
             setError('Error de conexión con el servidor')
-            console.error(err)
+            console.error(e)
         }
 
     }
     return (
         <>
-            {!session && (
             <form className='login-form' onSubmit={handleSubmit}>
                     <h2 className="login-title">Accede a tu cuenta</h2>
                     {error && <p style={{color: 'red'}}>{error}</p>}
@@ -57,8 +55,6 @@ export function Login() {
                     <button type="submit">Iniciar sesión</button>
                     <p style={{color: 'black'}}>No tienes una cuenta? <a href="">Registrarse</a></p>
             </form>
-            )}
-            {session && navigate('/dashboard')}
         </>
     )
 }
