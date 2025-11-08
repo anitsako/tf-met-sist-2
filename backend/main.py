@@ -17,11 +17,11 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     try:
-        print("🔌 Intentando conectar a la base de datos...")
+        print("Intentando conectar a la base de datos...")
         await db.connect()
-        print("✅ Conexión exitosa a la base de datos.")
+        print("Conexión exitosa a la base de datos.")
     except Exception as e:
-        print("❌ Error al conectar a la base de datos:", e)
+        print("Error al conectar a la base de datos:", e)
 
 @app.on_event("shutdown")
 async def shutdown():
