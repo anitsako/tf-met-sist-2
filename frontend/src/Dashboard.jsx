@@ -21,7 +21,6 @@ export function Dashboard() {
       try {
         const response = await api.get("/turnos/")
         setLista(response.data)
-        console.log(response.data)
       } catch(e) {
         console.error("error al cargar los turnos:", e);
       } finally {
@@ -38,7 +37,6 @@ useEffect(() => {
     try {
       const response = await api.get("/turnos/pendientes/hoy/");
       setCitasPendientes(response.data);
-      console.log(response.data)
     } catch (e) {
       console.error("Error al cargar citas pendientes:", e);
     }

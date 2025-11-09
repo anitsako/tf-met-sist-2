@@ -1,36 +1,70 @@
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { set, useForm } from 'react-hook-form'
 import { api } from './api'
 import { NavLink } from 'react-router-dom'
 
 export function TurnoForm({ onCreated }) {
+  const [list, setList] = useState([])
   const { register, handleSubmit, reset } = useForm()
   const [pacientes, setPacientes] = useState([])
   const [profesionales, setProfesionales] = useState([])
+  const [loading, setLoading] = useState('')
+  const [error, setError] = useState('')
 
-  useEffect(() => {
+  const cargar = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const response = await api.get('/turnos')
+      setList(response.data)
+
+    } catch(e) {
+        console.error('Error cargando los turnos: ', e.response?.data || e.message)
+        setError("No se pudieron cargar los turnos")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+    useEffect(() => {
     Promise.allSettled([api.get('/pacientes'), api.get('/profesionales')])
       .then(([p, pr]) => {
         if (p.status === 'fulfilled') setPacientes(p.value.data)
         if (pr.status === 'fulfilled') setProfesionales(pr.value.data)
       })
+      cargar()
   }, [])
 
   const onSubmit = async (data) => {
-  const turno = {
-    paciente_id: parseInt(data.paciente_id),
-    profesional_id: parseInt(data.profesional_id),
-    fecha: data.fecha,
-    hora: data.hora,
+    const turno = {
+      paciente_id: parseInt(data.paciente_id),
+      profesional_id: parseInt(data.profesional_id),
+      fecha: data.fecha,
+      hora: data.hora,
+    }
+
+    try {
+      await api.post('/turnos', turno);
+      reset();
+      onCreated?.();
+    } catch (e) {
+      alert(e?.response?.data?.detail || 'Error creando turno');
+    }
   }
 
- try {
-  await api.post('/turnos', turno);
-  reset();
-  onCreated?.();
-} catch (e) {
-  alert(e?.response?.data?.detail || 'Error creando turno');
-}
+  const onDelete = async (id) => {
+    if(!confirm('¿Deseas eliminar este turno?')) return
+    setLoading(true)
+    try {
+      await api.delete(`/turnos/${id}`)
+      await cargar()
+
+    } catch(e) {
+      console.error('Error eliminando el turno: ', e.response?.data || e.message)
+      setError('No se pudo eliminar el turno')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -82,8 +116,8 @@ export function TurnoForm({ onCreated }) {
           </div>
         </nav>
 
+      <div className='container py-5'>
       <h1>Nuevo Turno</h1>
-      <div className='card d-flex p-5 m-5 justify-content-center align-items-center align-self-center border border-primary'>
         <form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
           <div className="col-md-6">
             <label className="form-label">Paciente</label>
@@ -116,6 +150,56 @@ export function TurnoForm({ onCreated }) {
           </div>
         </form>
       </div>
+
+      <div className="card">
+          <div className="card-body">
+            {loading ? (
+              'Cargando…'
+            ) : (
+              <div className="table-responsive">
+                <table className="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Fecha</th>
+                      <th>Hora</th>
+                      <th>Paciente</th>
+                      <th>Profesional</th>
+                      <th>Especialidad</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {list.map((p) => (
+                      <tr key={p.id}>
+                        <td>{p.id}</td>
+                        <td>{p.fecha}</td>
+                        <td>{p.hora}</td>
+                        <td>{p.paciente}</td>
+                        <td>{p.profesional ?? ''}</td>
+                        <td>{p.especialidad ?? ''}</td>
+                        <td>{p.estado ?? ''}</td>
+                        <td className="d-flex gap-2">
+                          <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(p.id)}>
+                            Eliminar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {list.length === 0 && (
+                      <tr>
+                        <td colSpan="7" className="text-center text-muted">
+                          Sin Turnos
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
     </>
   )
 }
