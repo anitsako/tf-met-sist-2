@@ -42,19 +42,35 @@ async def crear_turno(body: TurnoIn):
             raise HTTPException(status_code=409, detail="Horario ocupado")
         raise HTTPException(status_code=400, detail=msg)
 
+# MODIFICACION: Se implementó la funcionalidad TIME_FORMAT ya que en 
+# la seccion de calendario no podia interpretar correctamente la hora almacenada como datetime
 @router.put("/{turno_id}/estado", response_model=Turno)
 async def cambiar_estado(turno_id: int, body: TurnoEstadoUpdate):
-    exist = await db.fetch_one("SELECT * FROM turnos WHERE id=:id", {"id": turno_id})
-    if not exist:
-        raise HTTPException(404, "Turno no encontrado")
+    try:
+        exist = await db.fetch_one("SELECT * FROM turnos WHERE id=:id", {"id": turno_id})
+        if not exist:
+           raise HTTPException(404, "Turno no encontrado")
     # normaliza a minúsculas
-    estado = body.estado.strip().lower()
-    if estado not in ("pendiente","confirmado","reprogramado","cancelado"):
-        raise HTTPException(400, "Estado inválido")
-    await db.execute("UPDATE turnos SET estado=:estado WHERE id=:id",
+        estado = body.estado.strip().lower()
+        if estado not in ("pendiente","confirmado","reprogramado","cancelado"):
+           raise HTTPException(400, "Estado inválido")
+    
+    # Actualizar estado
+        await db.execute("UPDATE turnos SET estado=:estado WHERE id=:id",
                      {"estado": estado, "id": turno_id})
-    row = await db.fetch_one("SELECT * FROM turnos WHERE id=:id", {"id": turno_id})
-    return row
+    #vuelve a leer el turno con hora formateada
+        row = await db.fetch_one("""
+            SELECT id, paciente_id, profesional_id,
+                   fecha, TIME_FORMAT(hora, '%H:%i') AS hora, estado 
+            FROM turnos 
+            WHERE id=:id
+        """, {"id": turno_id})
+
+        return row
+    except HTTPException: 
+        raise
+    except Exception as e:
+        raise HTTPException(500, f"Error al cambiar estado: {str(e)}")
 
 @router.delete("/{turno_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def eliminar_turno(turno_id: int):

@@ -73,12 +73,19 @@ useEffect(() => {
  // Cambiar estado de turno
  const cambiarEstado = async (turnoId, nuevoEstado) => {
     try {
-        await api.put(`/turnos/${turnoId}/estado`, { estado: nuevoEstado });
-        await cargarDatos(); //Recargar datos
-        alert("Estado actualizado correctamente");
+      const res = await api.put(`/turnos/${turnoId}/estado`, { estado: nuevoEstado });
+      const turnoActualizado = res.data;
+
+      // actualiza los estados locales sin recargar
+      setTodosTurnos((prev) =>
+      prev.map((t) => (t.id === turnoId ? turnoActualizado : t))
+    );
+
+        alert(`Estado cambiado a: ${nuevoEstado}`);
     } catch (e) {
-        console.error("Error al cambiar estado:", e);
-        alert("Error al cambiar el estado");
+        console.error("Estado cambiado a:", e)
+        const mensaje = e.response?.data?.detail || e.message || "Error desconocido";
+        alert(`No se pudo cambiar el estado: ${mensaje}`);
     }
  };
 
