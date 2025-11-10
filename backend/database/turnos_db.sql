@@ -28,6 +28,15 @@ CREATE TABLE IF NOT EXISTS profesionales (
   FOREIGN KEY (especialidad_id) REFERENCES especialidades(id)
 );
 
+CREATE TABLE IF NOT EXISTS clientes (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  dni VARCHAR(255) NOT NULL,
+  nombre VARCHAR(255) NOT NULL,
+  apellido VARCHAR(255) NOT NULL,
+  direccion VARCHAR(255) NOT NULL,
+  telefono VARCHAR(255) NOT NULL,
+  contraseña VARCHAR(255) NOT NULL,
+);
 -- borra la tabla turnos si existe para recrearla limpia (cuidado)
 DROP TABLE IF EXISTS turnos;
 
